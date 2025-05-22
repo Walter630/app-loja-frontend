@@ -11,19 +11,25 @@
       class="pa-6 rounded-xl ma-5"
       width="400"
       elevation="4"
-      style="background-color: rgba(0, 0, 0, 0.45)"
+      style="
+        background-color: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(3px);
+        -webkit-backdrop-filter: blur(6px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      "
     >
       <v-card-title class="text-center">
-        <h2 class="text-primary">Login</h2>
+        <h2 class="text-black">Login</h2>
       </v-card-title>
 
       <v-form @submit.prevent="login">
         <v-text-field
-          v-model="email"
-          label="Email"
-          type="email"
+          v-model="cpf"
+          label="cpf"
+          type="cpf"
           prepend-icon="mdi-account"
           class="mb-4"
+          style="--v-theme-on-surface: black; color: black"
           required
         ></v-text-field>
 
@@ -33,6 +39,7 @@
           type="password"
           prepend-icon="mdi-lock"
           class="mb-4"
+          style="--v-theme-on-surface: black; color: black"
           required
         ></v-text-field>
 
@@ -57,7 +64,7 @@ import axios from "axios";
 
 const router = useRouter();
 
-const email = ref("");
+const cpf = ref("");
 const senha = ref("");
 const mensagem = ref("");
 const mensagemTipo = ref<"error" | "success">("error");
@@ -68,15 +75,15 @@ const Acesso = async () => {
 const login = async () => {
   mensagem.value = "";
 
-  if (!email.value || !senha.value) {
+  if (!cpf.value || !senha.value) {
     mensagem.value = "Preencha todos os campos.";
     mensagemTipo.value = "error";
     return;
   }
 
   try {
-    const response = await axios.post("http://localhost:4000/user/login", {
-      email: email.value,
+    const response = await axios.post("http://localhost:3000/user/login", {
+      cpf: cpf.value,
       senha: senha.value,
     });
 
@@ -113,6 +120,6 @@ h2 {
 
 a {
   text-decoration: none;
-  color: #6c63ff;
+  color: #000000;
 }
 </style>

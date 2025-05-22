@@ -2,7 +2,7 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
 
-interface Roupa {
+export interface Roupa {
   id: string;
   nome: string;
   preco: number;
@@ -23,7 +23,7 @@ export const useRoupasStore = defineStore('roupas', {
       this.loading = true
       this.erro = null
       try {
-        const res = await axios.get<Roupa[]>('http://localhost:3000/itemroupas')
+        const res = await axios.get<Roupa[]>('http://localhost:3000/itemRoupa')
         this.roupas = res.data
       } catch (error: any) {
         console.error('Erro ao buscar todos:', error.response?.data || error.message)

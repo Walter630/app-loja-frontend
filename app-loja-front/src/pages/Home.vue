@@ -3,54 +3,130 @@
     elevation="2"
     scroll-behavior="elevate fade-image collapse hide"
     scroll-threshold="519"
+    color="pink-lighten-2"
   >
     <template v-slot:prepend>
       <v-app-nav-bar></v-app-nav-bar>
     </template>
-    <v-app-bar-title>Site</v-app-bar-title>
+    <v-app-bar-title>Bella Fitnnes</v-app-bar-title>
 
-    <v-btn color="white" @click="admin"> Admin </v-btn>
-    <v-avatar color="primary">
+    <v-btn v-if="user.isAutenticate" color="white" @click="admin"> Admin </v-btn>
+    <v-avatar v-if="user.isAutenticate" color="primary">
       <v-img alt="John" src="./login.png"></v-img>
     </v-avatar>
 
-    <v-btn icon>
+    <v-btn v-if="user.isAutenticate" icon>
       <v-icon>mdi-magnify</v-icon>
     </v-btn>
 
-    <v-btn icon>
+    <v-btn v-if="user.isAutenticate" icon>
       <v-icon>mdi-heart</v-icon>
     </v-btn>
-
-    <v-btn icon>
+    <v-btn class="botao" v-if="!user.isAutenticate" @click="irParaLogin">Login</v-btn>
+    <v-btn class="botao" v-if="!user.isAutenticate" @click="irParaCadastro"
+      >Cadastro</v-btn
+    >
+    <v-btn v-if="user.isAutenticate" icon>
       <v-icon>mdi-dots-vertical</v-icon>
     </v-btn>
   </v-app-bar>
 
   <v-main>
-    <v-col cols="12" md="4">
-      <v-card style="padding: 10px; width: 30rem">
-        <v-img>
-          <v-card-text> sad </v-card-text>
-        </v-img>
-      </v-card>
-    </v-col>
+    <ListarRoupas />
+    <v-card>
+      <v-btn color="success" @click="logout">Sair</v-btn>
+    </v-card>
   </v-main>
 </template>
 
 <script>
+import { onMounted } from "vue";
+import ListarRoupas from "./ListarRoupas.vue";
 import { useRouter } from "vue-router";
+import { useUserStore } from "@/stores/UserStore";
+
 export default {
+  components: { ListarRoupas },
   setup() {
     const router = useRouter();
+    const user = useUserStore();
 
     const admin = () => {
       router.push("/AdminRota/Admin");
     };
 
+    onMounted(() => {
+      user.verificarToken();
+    });
+
+    const irParaLogin = () => {
+      router.push("/login");
+    };
+
+    const irParaCadastro = () => {
+      router.push("/Cadastro");
+    };
+
+    const logout = () => {
+      user.logout();
+    };
+
     return {
       admin,
+      logout,
+      user,
+      irParaCadastro,
+      irParaLogin,
     };
   },
 };
 </script>
+
+<style>
+.botao {
+  color: white;
+  font-weight: bold;
+  padding: 10px 20px;
+  position: relative;
+  overflow: hidden;
+}
+.botao::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.botao:hover {
+  color: aqua;
+  pointer-events: visible;
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
+  transition: all 0.3 ease;
+}
+.botao:hover {
+  background-color: #111;
+  color: cyan;
+}
+.botao:hover::after {
+  opacity: 1;
+}
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.botao:hover {
+  animation: pulse 0.3s ease-in-out;
+}
+</style>

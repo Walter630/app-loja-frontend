@@ -7,46 +7,50 @@
       min-height: 100vh;
     "
   >
-    <v-card class="card pa-6 rounded-xl ma-5" width="400" elevation="4">
-      <v-card-title style="text-align: center">
+    <v-card
+      class="card pa-6 rounded-xl ma-5"
+      width="400"
+      elevation="4"
+      style="
+        background-color: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(3px);
+        -webkit-backdrop-filter: blur(6px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      "
+    >
+      <v-card-title style="text-align: center; color: black">
         <h1>Cadastro</h1>
       </v-card-title>
 
-      <v-form @submit.prevent="login">
-        <h4>Nome:</h4>
+      <v-form @submit.prevent="cadastrar">
         <v-text-field
           v-model="nome"
           label="Seu Nome"
           prepend-icon="mdi-account"
-          type="email"
-          required
-        />
-        <h4>Email:</h4>
-        <v-text-field
-          v-model="email"
-          label="Seu e-mail"
-          prepend-icon="mdi-account"
-          type="email"
+          type="cpf"
+          style="--v-theme-on-surface: black; color: black"
           required
         />
 
-        <h4>Senha:</h4>
+        <v-text-field
+          v-model="cpf"
+          label="Seu cpf"
+          prepend-icon="mdi-account"
+          style="--v-theme-on-surface: black; color: black"
+          type="cpf"
+          required
+        />
+
         <v-text-field
           v-model="senha"
           label="Sua senha"
           type="password"
           prepend-icon="mdi-lock"
-          variant="outlined"
+          style="--v-theme-on-surface: black; color: black"
           required
         />
 
-        <v-btn
-          color="#6c63ff"
-          block
-          class="white--text mt-2"
-          type="submit"
-          @click="Acesso"
-        >
+        <v-btn color="#6c63ff" block class="white--text mt-2 rounded-pill" type="submit">
           Acessar
         </v-btn>
 
@@ -56,6 +60,7 @@
           class="mt-3"
           density="compact"
           border="start"
+          color="red"
         >
           {{ mensagem }}
         </v-alert>
@@ -67,51 +72,34 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { useRouter } from "vue-router";
-import axios from "axios";
+import { useUserStore } from "@/stores/UserStore";
 
 const router = useRouter();
-const email = ref("");
+const cpf = ref("");
 const senha = ref("");
 const nome = ref("");
 const mensagem = ref("");
 const mensagemTipo = ref<"success" | "error">("error");
+const userS = useUserStore();
 
-const Acesso = async () => {
-  router.push("/Home");
-};
-const login = async () => {
+const cadastrar = async () => {
   mensagem.value = "";
 
-  if (!email.value || !senha.value || !nome.value) {
+  if (!cpf.value || !senha.value || !nome.value) {
     mensagem.value = "Preencha todos os campos.";
     mensagemTipo.value = "error";
     return;
   }
 
-  try {
-    const response = await axios.post("http://localhost:4000/user/login", {
-      nome: nome.value,
-      email: email.value,
-      senha: senha.value,
-    });
+  const resultado = await userS.cadastrar(nome.value, cpf.value, senha.value);
 
-    if (response.data.usuario) {
-      localStorage.setItem("token", response.data.token);
-      mensagem.value = "Login realizado com sucesso!";
-      mensagemTipo.value = "success";
-
-      // redirecionar para outra rota, como /perfil
-      router.push("/home");
-    } else {
-      mensagem.value = response.data.message || "Erro ao fazer login";
-      mensagemTipo.value = "error";
-    }
-  } catch (error: any) {
-    if (error.response?.data?.message) {
-      mensagem.value = error.response.data.message;
-    } else {
-      mensagem.value = "Erro interno ao fazer login. Tente novamente.";
-    }
+  if (!userS.erro) {
+    mensagem.value = "cadastro realizado com sucesso!";
+    mensagemTipo.value = "success";
+    // redirecionar para outra rota, como /perfil
+    router.push("/home");
+  } else {
+    mensagem.value = userS.erro || "Erro ao Cadastrar Usuario";
     mensagemTipo.value = "error";
   }
 };
