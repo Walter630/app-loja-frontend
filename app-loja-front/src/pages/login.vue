@@ -47,7 +47,7 @@
           {{ mensagem }}
         </v-alert>
 
-        <v-btn color="primary" block type="submit" @click="Acesso">Acessar</v-btn>
+        <v-btn color="primary" block type="submit">Acessar</v-btn>
 
         <p class="mt-3 text-center">
           <router-link to="/cadastro">Não tem conta? Cadastre-se</router-link>
@@ -58,50 +58,34 @@
 </template>
 
 <script setup lang="ts">
+import { useUserStore } from "@/stores/UserStore";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
-import axios from "axios";
 
 const router = useRouter();
+const user = useUserStore();
 
 const cpf = ref("");
 const senha = ref("");
 const mensagem = ref("");
 const mensagemTipo = ref<"error" | "success">("error");
 
-const Acesso = async () => {
-  router.push("/Home");
-};
 const login = async () => {
-  mensagem.value = "";
-
-  if (!cpf.value || !senha.value) {
-    mensagem.value = "Preencha todos os campos.";
+  if (cpf.value === "" || senha.value === "") {
+    mensagem.value = "Preencha todos os campos";
     mensagemTipo.value = "error";
     return;
   }
+  user
+    .login(cpf.value, senha.value)
 
-  try {
-    const response = await axios.post("http://localhost:3000/user/login", {
-      cpf: cpf.value,
-      senha: senha.value,
-    });
-
-    if (response.data.usuario && response.data.token) {
-      localStorage.setItem("token", response.data.token);
-      mensagem.value = "Login realizado com sucesso!";
-      mensagemTipo.value = "success";
-
-      // Redireciona, por exemplo, para a página inicial
-      router.push("/home");
-    } else {
-      mensagem.value = response.data.message || "Erro ao fazer login";
+    .then(() => {
+      router.push("/Home");
+    })
+    .catch((error) => {
+      mensagem.value = error.response.data.message;
       mensagemTipo.value = "error";
-    }
-  } catch (error: any) {
-    mensagem.value = error?.response?.data?.message || "Erro interno. Tente novamente.";
-    mensagemTipo.value = "error";
-  }
+    });
 };
 </script>
 

@@ -83,25 +83,16 @@ const mensagemTipo = ref<"success" | "error">("error");
 const userS = useUserStore();
 
 const cadastrar = async () => {
-  mensagem.value = "";
-
-  if (!cpf.value || !senha.value || !nome.value) {
-    mensagem.value = "Preencha todos os campos.";
-    mensagemTipo.value = "error";
-    return;
-  }
-
-  const resultado = await userS.cadastrar(nome.value, cpf.value, senha.value);
-
-  if (!userS.erro) {
-    mensagem.value = "cadastro realizado com sucesso!";
-    mensagemTipo.value = "success";
-    // redirecionar para outra rota, como /perfil
-    router.push("/home");
-  } else {
-    mensagem.value = userS.erro || "Erro ao Cadastrar Usuario";
-    mensagemTipo.value = "error";
-  }
+  await userS.cadastrar(nome.value, cpf.value, senha.value);
+  await userS
+    .login(cpf.value, senha.value)
+    .then(() => {
+      router.push("/home");
+    })
+    .catch((error) => {
+      mensagem.value = error.response.data.message;
+      mensagemTipo.value = "error";
+    });
 };
 </script>
 

@@ -5,10 +5,13 @@ import axios from 'axios'
 export interface Roupa {
   id: string;
   nome: string;
-  preco: number;
+  valor: number;
   descricao: string;
-  categoria: string;
+  categoriaId: string;
   imagem: string;
+  estoque: number,
+  cor: string,
+  tamanho: string
 }
 
 export const useRoupasStore = defineStore('roupas', {
