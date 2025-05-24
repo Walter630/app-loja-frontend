@@ -3,7 +3,7 @@
     elevation="2"
     scroll-behavior="elevate fade-image collapse hide"
     scroll-threshold="519"
-    color="pink-lighten-2"
+    color="#F9D7D7"
   >
     <template v-slot:prepend>
       <v-app-bar-nav-icon></v-app-bar-nav-icon>
@@ -54,9 +54,6 @@
     <v-btn class="botao" v-if="!user.isAutenticate" @click="irParaCadastro"
       >Cadastro</v-btn
     >
-    <v-btn v-if="user.isAutenticate" icon>
-      <v-icon>mdi-dots-vertical</v-icon>
-    </v-btn>
   </v-app-bar>
 
   <v-main>
@@ -65,6 +62,26 @@
       <v-btn color="success" @click="logout">Sair</v-btn>
     </v-card>
   </v-main>
+
+  <v-footer
+    style="
+      text-align: center;
+      align-items: center;
+      display: flex;
+      justify-content: space-evenly;
+    "
+    color="#F9D7D7"
+  >
+    <v-btn elevation-6 style="color: #111">
+      <router-link to="/configs"><v-icon>mdi-account</v-icon></router-link>
+    </v-btn>
+    <v-btn elevation-6 style="color: #111">
+      <router-link><v-icon>mdi-cog</v-icon></router-link>
+    </v-btn>
+    <v-btn elevation-6 style="color: #111">
+      <router-link to="/Carrinho"><v-icon>mdi-cart-outline</v-icon></router-link>
+    </v-btn>
+  </v-footer>
 </template>
 
 <script>

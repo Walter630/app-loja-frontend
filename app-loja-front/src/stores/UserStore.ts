@@ -2,6 +2,7 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
 import {jwtDecode} from 'jwt-decode';
+import api from '@/services/api'
 
 const API = 'http://localhost:3000/user'
 
@@ -24,7 +25,7 @@ export const useUserStore = defineStore('user', {
     async fetchUsuarios() {
       this.loading = true
       try {
-        const res = await axios.get(`${API}/`) // ajuste conforme seu endpoint
+        const res = await api.get(`${API}/`) // ajuste conforme seu endpoint
         this.usuarios = res.data
       } catch (err: any) {
         this.erro = err.message
@@ -37,7 +38,7 @@ export const useUserStore = defineStore('user', {
       this.loading = true
       
       try {
-        const res = await axios.post(`${API}/login`, { cpf, senha })
+        const res = await api.post(`${API}/login`, { cpf, senha })
         this.usuarioLogado = res.data.user
         localStorage.setItem('token', res.data.token)
         
@@ -56,6 +57,7 @@ export const useUserStore = defineStore('user', {
         // aqui você pode futuramente decodificar o token e preencher usuarioLogado
         const decoded: any = jwtDecode(token)
         this.usuarioLogado = {
+          id: decoded.id,
           nome: decoded.nome,
           cpf: decoded.cpf
         }
@@ -74,7 +76,7 @@ export const useUserStore = defineStore('user', {
     async cadastrar(nome: string, cpf: string, senha: string){
       this.loading  = true;
       try{
-        const res = await axios.post(API, {nome, cpf, senha})
+        const res = await api.post(`${API}/cadastrar`, {nome, cpf, senha})
         await this.fetchUsuarios()
         await this.login(cpf, senha)
         return res.data
@@ -84,6 +86,9 @@ export const useUserStore = defineStore('user', {
         this.loading = false
       }
 
-    }
+    },
+    init() {
+        this.verificarToken();
+   }
   },
 })

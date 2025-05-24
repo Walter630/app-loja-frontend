@@ -5,5 +5,9 @@
 </template>
 
 <script lang="ts" setup>
+import { useUserStore } from "./stores/UserStore";
+
 //
+const userStore = useUserStore();
+userStore.verificarToken();
 </script>
